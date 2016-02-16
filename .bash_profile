@@ -2,7 +2,7 @@
 # Load our dotfiles like ~/.bash_prompt, etc…
 #   ~/.extra can be used for settings you don’t want to commit,
 #   Use it to configure your PATH, thus it being first in line.
-for file in ~/.{extra,bash_prompt,exports,aliases,functions}; do
+for file in ~/.{exports,extra,bash_prompt,aliases,functions}; do
     [ -r "$file" ] && source "$file"
 done
 unset file
@@ -60,14 +60,43 @@ export PROMPT_COMMAND="history -a; history -c; history -r; $PROMPT_COMMAND"
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
 
-# Load RVM into a shell session *as a function*
-[[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm"
+# Initialize rbenv
+eval "$(rbenv init -)"
 
+# enable pyenv shims and autocompletion
+if which pyenv > /dev/null; then eval "$(pyenv init -)"; fi
+
+# Load vault (password generation)
+which vault > /dev/null && . "$( vault --initpath )"
+
+# Load azure integration
+#. <(azure --completion)
 
 # z beats cd most of the time.
 #   github.com/rupa/z
 source ~/code/z/z.sh
 
+##
+## SSH
+##
+export SSH_ENV="${HOME}/.ssh/environment"
+
+# Source SSH settings, if applicable
+# depends on start_agent() function in .functions
+if [ "$(tty)" != '/dev/console' ] ;then
+  if [ -f "${SSH_ENV}" ]; then
+    . "${SSH_ENV}" >/dev/null
+    if ! ssh-add -l | egrep '.ssh/id(entity|_dsa|_rsa)' >/dev/null ;then
+      if ps -fp ${SSH_AGENT_PID} | grep ssh-agent$ >/dev/null ;then
+        /usr/bin/ssh-add
+      else
+        start_agent
+      fi
+    fi
+  else
+    start_agent
+  fi
+fi
 
 
 ##

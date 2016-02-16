@@ -1,3 +1,38 @@
+#SSH Agent Startup Modified from: http://mah.everybody.org/docs/ssh#run-ssh-agent
+
+start_agent() {
+  echo "Initialising new SSH agent..."
+  if [ ! -d ${HOME}/.ssh ] ;then
+    mkdir -p ${HOME}/.ssh
+    chmod 700 ${HOME}/.ssh
+    touch ${SSH_ENV}
+  fi
+  /usr/bin/ssh-agent | sed 's/^echo/#echo/' >"${SSH_ENV}"
+  rval=${?}
+  if [ ${rval} = 0 ] ;then
+    echo "Succeeded!"
+    chmod 600 "${SSH_ENV}"
+    . "${SSH_ENV}" >/dev/null
+    /usr/bin/ssh-add
+  else
+    echo "Failed to write ${SSH_ENV}"
+  fi
+}
+
+# ssh reagent
+# http://tychoish.com/posts/9-awesome-ssh-tricks/
+ssh-reagent () {
+  for agent in /tmp/ssh-*/agent.*; do
+      export SSH_AUTH_SOCK=$agent
+      if ssh-add -l 2>&1 > /dev/null; then
+         echo Found working SSH Agent:
+         ssh-add -l
+         return
+      fi
+  done
+  echo Cannot find ssh agent - maybe you should reconnect and forward it?
+}
+
 # Create a new directory and enter it
 function md() {
 	mkdir -p "$@" && cd "$@"
@@ -161,4 +196,9 @@ code () {
 #   Must be in /etc/shells
 shellswitch () {
 	chsh -s $(brew --prefix)/bin/$1
+}
+
+# list all zombie processes
+function zombie() {
+  ps aux | awk '{if ($8=="Z") { print $2 }}'
 }
