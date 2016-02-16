@@ -1,11 +1,13 @@
 
 # working files
+.bash_history
 .vim/viminfo
 .vim/swaps/*
 .vim/undo
 
 # git credential file
 .gitconfig.local
+.extra
 
 
 

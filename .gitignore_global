@@ -1,0 +1,8 @@
+.DS_Store
+Thumbs.db
+.svn
+*~
+*.swp
+.hg
+.hgignore
+npm-debug.log
