@@ -44,6 +44,11 @@ function f() {
 	find . -name "$1" 2>&1 | grep -v 'Permission denied'
 }
 
+# recursively change file extension starting at current dir
+function change-ext() {
+  find . -iname "*.$0" -exec bash -c 'mv "$0" "${0%\.$0}.$1"' {} \;
+}
+
 # List all files, long format, colorized, permissions in octal
 function la(){
  	ls -l  "$@" | awk '
