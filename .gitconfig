@@ -6,19 +6,19 @@
 	sclone = clone --depth=1
 	co = checkout
 	df = diff --color --color-words --abbrev
-	lg = log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --
-	
+	l = log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --
+
 	# Show the diff between the latest commit and the current state
 	d = !"git diff-index --quiet HEAD -- || clear; git --no-pager diff --patch-with-stat"
 
 	reup = rebase-update # depot_tools specific
-	
+
 [core]
 	excludesfile = ~/.gitignore
 	attributesfile = ~/.gitattributes
 	# insanely beautiful diffs
 	pager = diff-highlight | diff-so-fancy | less -r
-	
+
 # so much color
 [color]
 	ui = always
@@ -68,7 +68,7 @@
 [push]
 	default = current
 
-# use separate file for username / github token / etc 
+# use separate file for username / github token / etc
 [include]
   path = ~/.gitconfig.local
 

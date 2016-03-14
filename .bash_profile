@@ -57,17 +57,19 @@ export PROMPT_COMMAND="history -a; history -c; history -r; $PROMPT_COMMAND"
 ##
 ## hooking in other apps…
 ##
-export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
+if [ -f $HOME/.nvm ]; then
+  export NVM_DIR="$HOME/.nvm"
+  [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
+fi
 
 # Initialize rbenv
-eval "$(rbenv init -)"
+if which rbenv > /dev/null; then eval "$(rbenv init -)"; fi
 
 # enable pyenv shims and autocompletion
 if which pyenv > /dev/null; then eval "$(pyenv init -)"; fi
 
 # Load vault (password generation)
-which vault > /dev/null && . "$( vault --initpath )"
+if which vault > /dev/null; then eval "$( vault --initpath )"; fi
 
 # Load azure integration
 #. <(azure --completion)
@@ -79,7 +81,7 @@ source ~/code/z/z.sh
 ##
 ## SSH
 ##
-export SSH_ENV="${HOME}/.ssh/environment"
+export SSH_ENV="$HOME/.ssh/environment"
 
 # Source SSH settings, if applicable
 # depends on start_agent() function in .functions
@@ -87,7 +89,9 @@ if [ "$(tty)" != '/dev/console' ] ;then
   if [ -f "${SSH_ENV}" ]; then
     . "${SSH_ENV}" >/dev/null
     if ! ssh-add -l | egrep '.ssh/id(entity|_dsa|_rsa)' >/dev/null ;then
+      echo "starting"
       if ps -fp ${SSH_AGENT_PID} | grep ssh-agent$ >/dev/null ;then
+        echo "using existing session"
         /usr/bin/ssh-add
       else
         start_agent
@@ -108,11 +112,9 @@ if [[ -n "$ZSH_VERSION" ]]; then  # quit now if in zsh
 fi;
 
 # bash completion.
-if  which brew > /dev/null && [ -f "$(brew --prefix)/share/bash-completion/bash_completion" ]; then
-    source "$(brew --prefix)/share/bash-completion/bash_completion";
-elif [ -f /etc/bash_completion ]; then
-    source /etc/bash_completion;
-fi;
+if [ -f `brew --prefix`/etc/bash_completion ]; then
+    . `brew --prefix`/etc/bash_completion
+fi
 
 # homebrew completion
 if  which brew > /dev/null; then
